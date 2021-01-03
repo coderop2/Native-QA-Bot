@@ -66,7 +66,7 @@ print("Bot-> Please wait while i get all the required data ready")
 paragraphs = {}
 for name in possible_db_name:
     paragraphs[name] = []
-    with open('../dataset/'+name+'.txt',"r") as f:
+    with open('../dataset/'+name+'.txt',"r", encoding='utf-8') as f:
         for line in f.readlines():
             if(len(line.strip()) > 0):
                 paragraphs[name].append(line.strip())
