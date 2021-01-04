@@ -20,7 +20,7 @@ possible_db_name = ['New_York_City',
                  'Mammal',
                  'Alloy',
                  'Rajasthan',
-                 'Northwestern_University',
+                 'Ataturk',
                  'Anthropology']
 
 def properInput(x):
@@ -53,13 +53,14 @@ if specific:
         inp2 = input()
         if properDatabaseName(inp2, possible_db_name):
             break
+    try:
+        file = open('../dataset/'+databasename+'.txt',"r")
+    except FileNotFoundError:
+        print("Bot> Oops! Currently i dont have \"" + databasename + "\""+" in my database set")
+        exit()
 
 # Loading Dataset
-try:
-    file = open('../dataset/'+databasename+'.txt',"r")
-except FileNotFoundError:
-	print("Bot> Oops! Currently i dont have \"" + databasename + "\""+" in my database set")
-	exit()
+
 
 print("Bot-> Please wait while i get all the required data ready")
 
@@ -72,27 +73,28 @@ for name in possible_db_name:
                 paragraphs[name].append(line.strip())
 
 
-print("Bot> Hey there! Thanks for your patience. Please ask factoid based questions only :P")
-print("Bot> You can say me Bye anytime you want")
+print("Bot-> Hey there! Thanks for your patience. Please ask factoid based questions only :P")
+print("Bot-> You can say me Bye anytime you want")
 
 # Greet Pattern
-greetPattern = re.compile("^\ *((hi+)|((good\ )?morning|evening|afternoon)|(he((llo)|y+)))\ *$",re.IGNORECASE)
+greetPattern = re.compile("^\ *((hi+)|((good\ )?morning|evening|afternoon)|(he((llo)|y+)))\ *$",re.I)
+exitPattern = re.compile("^\ *((bye*\ ?)|(see (you|ya) later))\ *$",re.I)
 
 while True:
     response = ""
     userInp = input("You-> ")
     if not len(userInp) > 0:
-        response = "Bot-> Please enter valid question."
-    elif greetPattern.findall(userQuery):
+        response = "Please enter valid question."
+    elif greetPattern.match(userInp):
         response = "Hello!"
-    elif userInp.strip().lower() == "bye":
+    elif exitPattern.match(userInp):
         response = "See ya next time!"
         print("Bot-> ", response)
         break
     else:
         if specific:
-            print("Going deep")
+            response = "Going deep"
         else:
-            print("Going wide")
+            response = "Going wide"
     print("Bot-> ", response)
     
