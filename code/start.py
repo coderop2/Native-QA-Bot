@@ -2,6 +2,11 @@ print("Bot-> Please wait, while I get ready ...")
 
 import re
 import sys
+from nltk import pos_tag,ne_chunk
+from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.stem import PorterStemmer, SnowballStemmer
+
+instead_use_lemmanization = False
 
 print("Bot-> I have 2 modes in which i can run")
 print("Bot-> 1) Data Specific questions - Here you can chosse the category of the data")
