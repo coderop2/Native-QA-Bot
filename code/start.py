@@ -1,10 +1,9 @@
 print("Bot-> Please wait, while I get ready ...")
 
-import re
-import sys
-from nltk import pos_tag,ne_chunk
-from nltk.tokenize import word_tokenize, sent_tokenize
-from nltk.stem import PorterStemmer, SnowballStemmer
+import re, sys, os
+from ProcessContext import ProcessContext as PC
+from ProcessQuestion import ProcessQuestion as PQ
+from GetResult import GetResult as GR
 
 instead_use_lemmanization = False
 
@@ -15,18 +14,7 @@ print("Bot-> Please Choose :- ", end = "")
 
 specific = False
 databasename = ""
-possible_db_name = ['New_York_City',
-                 'Buddhism',
-                 'Queen_Victoria',
-                 'Modern_history',
-                 'Windows_8',
-                 'USB',
-                 'Marvel_Comics',
-                 'Mammal',
-                 'Alloy',
-                 'Rajasthan',
-                 'Ataturk',
-                 'Anthropology']
+possible_db_name = os.listdir('../dataset')
 
 def properInput(x):
     global specific
@@ -69,20 +57,21 @@ if specific:
 
 print("Bot-> Please wait while i get all the required data ready")
 
-paragraphs = {}
-for name in possible_db_name:
-    paragraphs[name] = []
-    with open('../dataset/'+name+'.txt',"r", encoding='utf-8') as f:
-        for line in f.readlines():
-            if(len(line.strip()) > 0):
-                paragraphs[name].append(line.strip())
+docs = {}
+if specific:
+    for name in possible_db_name:
+        docs[name] = []
+        with open('../dataset/'+name,"r", encoding='utf-8') as f:
+            for line in f.readlines():
+                if(len(line.strip()) > 0):
+                    docs[name].append(line.strip())
 
 
 print("Bot-> Hey there! Thanks for your patience. Please ask factoid based questions only :P")
 print("Bot-> You can say me Bye anytime you want")
 
 # Greet Pattern
-greetPattern = re.compile("^\ *((hi+)|((good\ )?morning|evening|afternoon)|(he((llo)|y+)))\ *$",re.I)
+greetPattern = re.compile("^\ *((hey)|(hi+)|((good\ )?morning|evening|afternoon)|(he((llo)|y+)))\ *$",re.I)
 exitPattern = re.compile("^\ *((bye*\ ?)|(see (you|ya) later))\ *$",re.I)
 
 while True:
