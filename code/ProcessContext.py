@@ -1,4 +1,6 @@
+import math, nltk
 import numpy as np
+from Utilities import Utilities
 from nltk.corpus import stopwords
 from nltk import pos_tag,ne_chunk
 from nltk.corpus import stopwords
@@ -7,20 +9,23 @@ from nltk.stem import PorterStemmer, SnowballStemmer
 
 class ProcessContext:
     def __init__(self, contextParas, remove_stopwords = True):
+        self.utl = Utilities()
         self.sent_tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
         self.remove_stopwords = remove_stopwords
         self.stopwords = stopwords.words('english')
         self.stemmer = PorterStemmer()
         self.numOfParas = len(contextParas)
         self.paraInfo, self.vocab, self.processed_vocab = self.processParas(contextParas)
-        self.contextIDF = {}
         del contextParas
     
     def processParas(self, paras):
+        idf = {}
         docs = {}
         vocab = set()
         processed_vocab = set()
+        
         for index in range(self.numOfParas):
+            
             docs[index] = {}
             docs[index]['para'] = paras[index]
             docs[index]['paraWords'] = word_tokenize(paras[index])
@@ -32,13 +37,20 @@ class ProcessContext:
             docs[index]['paraPV'] = pv
             processed_vocab.update(pv)
             
-        idf = {}
-        for index in range(self.numOfParas):
-            for word in docs[index]['paraPV']:
+            for word in pv:
                 if idf.get(word,0) == 0:
                     idf[word] = 1
                 else:
                     idf[word] += 1
+        
+        self.contextIDF = {}
+        for word in idf:
+            # Laplace smoothing
+            self.contextIDF[word] = math.log((self.numOfParas+1)/idf[word])
+            
+        for index in range(self.numOfParas):
+            docs[index]['paraVector'] = self.utl.ComputeVector(docs[index]['paraWF'], self.contextIDF)
+            
         return docs, vocab, processed_vocab
     
     def processSentences(self, sentences):

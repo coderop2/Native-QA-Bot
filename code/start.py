@@ -3,7 +3,7 @@ print("Bot-> Please wait, while I get ready ...")
 import re, sys, os
 from ProcessContext import ProcessContext as PC
 from ProcessQuestion import ProcessQuestion as PQ
-from GetResult import GetResult as GR
+from Utilities import Utilities as UT
 
 instead_use_lemmanization = False
 
@@ -15,6 +15,7 @@ print("Bot-> Please Choose :- ", end = "")
 specific = False
 databasename = ""
 possible_db_name = os.listdir('../dataset')
+ut = UT()
 
 def properInput(x):
     global specific
@@ -47,7 +48,12 @@ if specific:
         if properDatabaseName(inp2, possible_db_name):
             break
     try:
-        file = open('../dataset/'+databasename+'.txt',"r")
+        file = open('../dataset/'+databasename,"r", encoding='utf-8')
+        specificDatalines = []
+        for line in file.readlines():
+            if(len(line.strip()) > 0):
+                specificDatalines.append(line.strip())
+        specificData = PC(specificDatalines)
     except FileNotFoundError:
         print("Bot> Oops! Currently i dont have \"" + databasename + "\""+" in my database set")
         exit()
@@ -56,17 +62,22 @@ if specific:
 
 
 print("Bot-> Please wait while i get all the required data ready")
-
+# print(specific)
 docs = {}
-if specific:
+if not specific:
     for name in possible_db_name:
-        docs[name] = []
+        docs[name] = {}
+        docs[name]['data'] = []
+        
         with open('../dataset/'+name,"r", encoding='utf-8') as f:
             for line in f.readlines():
                 if(len(line.strip()) > 0):
-                    docs[name].append(line.strip())
+                    docs[name]['data'].append(line.strip())
+                    
+        docs[name]['contextobj'] = PC(docs[name]['data'])
 
-
+# print(len(specificData.paraInfo))
+# print(specificData.paraInfo[0]['paraVector'])
 print("Bot-> Hey there! Thanks for your patience. Please ask factoid based questions only :P")
 print("Bot-> You can say me Bye anytime you want")
 
@@ -87,8 +98,13 @@ while True:
         break
     else:
         if specific:
+            print(len(specificData.paraInfo))
             response = "Going deep"
         else:
-            response = "Going wide"
+            closestvector, obj = ut.GetClosestContextFile(1)
+            if closestvector == 0:
+                response = "Please provide a better question with more context"
+            else:
+                response = "Going wide"
     print("Bot-> ", response)
     
