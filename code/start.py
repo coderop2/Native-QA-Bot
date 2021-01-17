@@ -88,7 +88,7 @@ exitPattern = re.compile("^\ *((bye*\ ?)|(see (you|ya) later))\ *$",re.I)
 while True:
     response = ""
     userInp = input("You-> ")
-    if not len(userInp) > 0:
+    if not len(userInp) > 5:
         response = "Please enter valid question."
     elif greetPattern.match(userInp):
         response = "Hello!"
@@ -98,8 +98,9 @@ while True:
         break
     else:
         if specific:
-            print(len(specificData.paraInfo))
-            response = "Going deep"
+            objPQ = PQ(userInp)
+            # print(len(specificData.paraInfo))
+            response = specificData.getResults(objPQ)
         else:
             closestvector, obj = ut.GetClosestContextFile(1)
             if closestvector == 0:
